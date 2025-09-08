@@ -18,18 +18,44 @@ class SeasonCountdown:
         self.sleepEvent.clear()
         self.font = data.config.layout.font
         self.font.large = data.config.layout.font_large_2
-        # Current season seems to not update until pre-season start so I will have to modify the Status and the nhl_api to get the coming season.
-        #self.season_start = datetime.date(2021,10,12)
-        self.season_start = datetime.strptime(self.data.status.next_season_start(), '%Y-%m-%d').date()
-        self.days_until_season = (self.season_start - date.today()).days
-        self.scroll_pos = self.matrix.width
         
-        # Set up season text
-        current_year = date.today().year
-        next_year = current_year + 1
-    
-        self.nextseason="{0}-{1}".format(current_year,next_year)
-        self.nextseason_short="NHL {0}-{1}".format(str(current_year)[-2:],str(next_year)[-2:])
+        # Get countdown data from Backend v2
+        countdown_data = getattr(data, 'season_countdown', {})
+        
+        if countdown_data:
+            # Use Backend v2 data
+            self.days_until_season = countdown_data.get('days_until_season', 0)
+            self.season_started = countdown_data.get('season_started', False)
+            self.nextseason = countdown_data.get('season_year', 'Unknown')
+            self.nextseason_short = f"NHL {self.nextseason}"
+            
+            # Get actual season start date if available
+            season_start_date = countdown_data.get('season_start_date')
+            if isinstance(season_start_date, str):
+                try:
+                    self.season_start = datetime.strptime(season_start_date, '%Y-%m-%d').date()
+                except ValueError:
+                    self.season_start = date.today()
+            else:
+                self.season_start = season_start_date or date.today()
+        else:
+            # Fallback for when Backend v2 data isn't available
+            debug.warning("No Backend v2 countdown data available, using fallback calculation")
+            current_year = date.today().year
+            next_year = current_year + 1
+            
+            # Estimate season start as early October
+            if date.today().month >= 10:
+                self.season_start = date(current_year + 1, 10, 7)
+            else:
+                self.season_start = date(current_year, 10, 7)
+            
+            self.days_until_season = (self.season_start - date.today()).days
+            self.season_started = self.days_until_season <= 0
+            self.nextseason = f"{current_year}-{str(next_year)[-2:]}"
+            self.nextseason_short = f"NHL {self.nextseason}"
+        
+        self.scroll_pos = self.matrix.width
 
     def draw(self):
         
@@ -40,9 +66,8 @@ class SeasonCountdown:
 
         debug.info(str(self.days_until_season) + " days to NHL Season")
 
-        if self.days_until_season <= 0:
+        if self.season_started or self.days_until_season <= 0:
             self.season_start_today()
-
         else:
             self.season_countdown()
   

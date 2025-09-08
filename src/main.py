@@ -65,7 +65,19 @@ def run():
     # This data will get passed throughout the entirety of this program.
     # It initializes all sorts of things like current season, teams, helper functions
     print("init Data")
-    data = Data(config)
+    import asyncio
+    from backend2.main import Backend2Main
+
+    async def setup_backend_v2():
+        backend = Backend2Main("config/backend2.yaml")
+        await backend.initialize()
+        await backend.start()
+        return backend.get_data_interface()
+
+    # Replace the synchronous Data initialization with async Backend v2:
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    data = loop.run_until_complete(setup_backend_v2())
 
     #If we pass the logging arguments on command line, override what's in the config.json, else use what's in config.json (color will always be false in config.json)
     if commandArgs.logcolor and commandArgs.loglevel != None:

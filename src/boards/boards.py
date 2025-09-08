@@ -222,19 +222,13 @@ class Boards:
     def scoreticker(self, data, matrix, sleepEvent):
         Scoreticker(data, matrix, sleepEvent).render()
 
-    # Since 2024, the playoff features are removed as we have not colected the new API endpoint for them. 
     def seriesticker(self, data, matrix, sleepEvent):
-        debug.info("seriesticker is disabled. This feature is not available right now")
-        pass
-        '''
-            forcing it to show since the playoff start and regular season end are in conflict for 2021
-        '''
-        
-        #Seriesticker(data, matrix, sleepEvent).render()
-        
-        '''if data.status.is_playoff(data.today, data.playoffs):
+        # Re-enabled with Backend v2 support
+        try:
             Seriesticker(data, matrix, sleepEvent).render()
-        '''    
+        except Exception as e:
+            debug.error(f"Error in seriesticker: {e}")
+            debug.info("Seriesticker error - playoff data may not be available")    
     
     # Since 2024, the playoff features are removed as we have not colected the new API endpoint for them. 
     def stanley_cup_champions(self, data, matrix, sleepEvent):

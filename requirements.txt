@@ -18,3 +18,7 @@ tzlocal
 rich
 diskcache
 env-canada>=0.6.1
+# Backend v2 dependencies
+aiohttp>=3.8.0
+pyyaml>=6.0
+beautifulsoup4>=4.9.0

@@ -1,0 +1,116 @@
+preferred_teams:
+- Toronto Maple Leafs
+- Montreal Canadiens
+timezone: America/New_York
+time_format: 12h
+polling:
+  live_game_fast: 3
+  live_game_slow: 20
+  pregame: 60
+  postgame: 300
+  player_stats: 900
+  standings: 1800
+  schedule: 3600
+  offline: 14400
+  playoffs: 3600        # 1 hour during off-season, faster during playoffs
+  season_schedule: 86400 # 24 hours (changes rarely)
+cache:
+  base_path: /tmp/nhl-scoreboard-cache
+  json_cache: true
+  sqlite_cache: false
+  max_age_seconds: 3600
+  schema_cache_age: 86400
+  cleanup_interval: 3600
+data_sources:
+  live_game:
+    nhl_official:
+      name: NHL Official API
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+    espn:
+      name: ESPN API
+      base_url: https://site.api.espn.com/apis/site/v2/sports/hockey/nhl
+      priority: 2
+      enabled: true
+      timeout_seconds: 15
+  standings:
+    nhl_official:
+      name: NHL Official Standings
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+    espn:
+      name: ESPN Standings
+      base_url: https://site.api.espn.com/apis/v2/sports/hockey/nhl
+      priority: 2
+      enabled: true
+      timeout_seconds: 15
+  team_info:
+    nhl_official:
+      name: NHL Official Teams
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+    backup_json:
+      name: Local Backup Teams
+      base_url: file://src/data/backup_teams_data.json
+      priority: 99
+      enabled: true
+      timeout_seconds: 5
+  schedule:
+    nhl_official:
+      name: NHL Official Schedule
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+    espn:
+      name: ESPN Schedule
+      base_url: https://site.api.espn.com/apis/v2/sports/hockey/nhl
+      priority: 2
+      enabled: true
+      timeout_seconds: 15
+  player_stats:
+    nhl_official:
+      name: NHL Official Stats
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+
+  playoffs:
+    nhl_official:
+      name: NHL Official Playoffs
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 15
+    
+    espn:
+      name: ESPN Playoffs
+      base_url: https://site.api.espn.com/apis/site/v2/sports/hockey/nhl
+      priority: 2
+      enabled: true
+      timeout_seconds: 15
+
+  season_schedule:
+    nhl_official:
+      name: NHL Season Info
+      base_url: https://api-web.nhle.com/v1
+      priority: 1
+      enabled: true
+      timeout_seconds: 10
+    
+    espn:
+      name: ESPN Season
+      base_url: https://site.api.espn.com/apis/site/v2/sports/hockey/nhl
+      priority: 2
+      enabled: true
+      timeout_seconds: 10
+log_level: INFO
+pi_optimizations: true
+max_concurrent_requests: 5
